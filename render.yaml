@@ -1,0 +1,29 @@
+services:
+  # Backend API Service
+  - type: web
+    name: growda-backend
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
+    autoDeploy: true
+    
+  # Frontend Static Site
+  - type: web
+    name: growda-frontend
+    runtime: static
+    buildCommand: "npm install && npm run build"
+    publishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://growda-backend.onrender.com
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - frontend/src/**
+        - frontend/package.json
+        - frontend/vite.config.js
